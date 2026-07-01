@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\AutomaticCodeGenerator;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
@@ -19,9 +20,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'code',
         'name',
         'email',
+        'phone',
+        'photo_path',
         'password',
+        'profile_ids',
     ];
 
     /**
@@ -31,8 +36,16 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if ($user->code === null || $user->code === '') {
+                $user->code = app(AutomaticCodeGenerator::class)->userCode();
+            }
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -42,7 +55,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'profile_ids' => 'array',
             'password' => 'hashed',
         ];
     }
