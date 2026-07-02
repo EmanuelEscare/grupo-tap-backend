@@ -1,66 +1,240 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Grupo TAP API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend API for technical test built with Laravel, PHP, and MongoDB. Implement bearer token authentication, product management, user management, profile management, section lookup, audit logging, and export endpoints for an Angular 19 frontend.
 
-## About Laravel
+## Technologies
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2
+- Laravel 11
+- MongoDB
+- mongodb/laravel-mongodb
+- Laravel Pint
+- Laravel Excel
+- Spatie Laravel PDF with Dompdf driver
+- PHPUnit
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2 or higher
+- Composer
+- MongoDB running locally or remotely
+- MongoDB PHP extension enabled
+- Node.js and npm only if Laravel frontend assets need to be built
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan storage:link
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+If frontend assets are needed:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+npm install
+npm run build
+```
 
-## Laravel Sponsors
+## MongoDB Configuration
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Configure these variables in `.env`:
 
-### Premium Partners
+```dotenv
+DB_CONNECTION=mongodb
+DB_URI=mongodb://127.0.0.1:27017
+DB_DATABASE=grupo_tap
+DB_USERNAME=
+DB_PASSWORD=
+DB_AUTH_SOURCE=
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+If MongoDB requires authentication, fill in `DB_USERNAME`, `DB_PASSWORD`, and `DB_AUTH_SOURCE`.
 
-## Contributing
+## Dependencies
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Install PHP dependencies:
 
-## Code of Conduct
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Install JavaScript dependencies only if needed:
 
-## Security Vulnerabilities
+```bash
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Migrations and Seeders
 
-## License
+Run migrations:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan migrate
+```
+
+Run seeders:
+
+```bash
+php artisan db:seed
+```
+
+Run both:
+
+```bash
+php artisan migrate --seed
+```
+
+The base seeder creates the `products`, `users`, and `profiles` sections.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+Format code with Laravel Pint:
+
+```bash
+./vendor/bin/pint
+./vendor/bin/pint --test
+```
+
+The test environment uses the `grupo_tap_testing` MongoDB database as configured in `phpunit.xml`.
+
+## Authentication
+
+Login endpoint:
+
+```http
+POST /api/auth/login
+```
+
+Request body:
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "password"
+}
+```
+
+The response includes an `access_token`. Send it to protected endpoints with:
+
+```http
+Authorization: Bearer {access_token}
+Accept: application/json
+```
+
+Logout invalidates the current token:
+
+```http
+POST /api/auth/logout
+```
+
+## Response Format
+
+Successful response:
+
+```json
+{
+  "success": true,
+  "message": "Message",
+  "data": {}
+}
+```
+
+Validation error response:
+
+```json
+{
+  "success": false,
+  "message": "Validation error",
+  "errors": {}
+}
+```
+
+## Endpoint Summary
+
+Authentication:
+
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `POST /api/auth/forgot-password`
+- `GET /api/me`
+- `GET /api/me/sections`
+
+Products:
+
+- `GET /api/products`
+- `POST /api/products`
+- `GET /api/products/{id}`
+- `PUT /api/products/{id}`
+- `DELETE /api/products/{id}`
+- `GET /api/products/export/pdf`
+- `GET /api/products/export/excel`
+
+Users:
+
+- `GET /api/users`
+- `POST /api/users`
+- `GET /api/users/{id}`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
+- `GET /api/users/export/pdf`
+- `GET /api/users/export/excel`
+
+Profiles:
+
+- `GET /api/profiles`
+- `POST /api/profiles`
+- `GET /api/profiles/{id}`
+- `PUT /api/profiles/{id}`
+- `DELETE /api/profiles/{id}`
+- `GET /api/profiles/export/pdf`
+- `GET /api/profiles/export/excel`
+
+Sections:
+
+- `GET /api/sections`
+
+## Audit Log
+
+Audit records are stored in the `audit_logs` collection. The system creates an audit log when products, users, or profiles are updated or deleted.
+
+Main fields:
+
+- `collection`
+- `document_id`
+- `action`
+- `before`
+- `after`
+- `user_id`
+- `created_at`
+
+For updates, `before` contains the previous state and `after` contains the new state. For deletes, `before` contains the deleted document data and `after` is `null`.
+
+## Section-Based Access
+
+Access to modules is controlled by `EnsureUserHasSectionAccess`.
+
+Users have `profile_ids`. Each profile has `section_ids`. The middleware checks that at least one of the user's profiles is related to the requested section.
+
+Base sections:
+
+- `products`
+- `users`
+- `profiles`
+
+Product endpoints require access to `products`. User endpoints require access to `users`. Profile endpoints require access to `profiles`. The section index endpoint only requires authentication.
+
+## Postman Collection
+
+The Postman collection is available at:
+
+```text
+docs/postman_collection.json
+```
+
+It includes the `base_url` and `token` variables and documents the available API endpoints.

@@ -13,7 +13,9 @@ class ProfilesExport implements FromCollection, WithHeadings, WithMapping
     /**
      * @param  Collection<int, Profile>  $profiles
      */
-    public function __construct(private readonly Collection $profiles) {}
+    public function __construct(private readonly Collection $profiles)
+    {
+    }
 
     /**
      * @return Collection<int, Profile>

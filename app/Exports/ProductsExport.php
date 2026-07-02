@@ -13,7 +13,9 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
     /**
      * @param  Collection<int, Product>  $products
      */
-    public function __construct(private readonly Collection $products) {}
+    public function __construct(private readonly Collection $products)
+    {
+    }
 
     /**
      * @return Collection<int, Product>

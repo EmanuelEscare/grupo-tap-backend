@@ -13,7 +13,9 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping
     /**
      * @param  Collection<int, User>  $users
      */
-    public function __construct(private readonly Collection $users) {}
+    public function __construct(private readonly Collection $users)
+    {
+    }
 
     /**
      * @return Collection<int, User>
