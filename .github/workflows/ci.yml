@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  tests:
+    name: Pint and PHPUnit
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:4sCqf5Hiaw+7pO6vIzaN6smnbi4o4Y0SZPzQuu4Y0nQ=
+      DB_CONNECTION: mongodb
+      DB_URI: mongodb://127.0.0.1:27017
+      DB_DATABASE: grupo_tap_testing
+      CACHE_STORE: array
+      MAIL_MAILER: array
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: array
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mongodb, mbstring, dom, fileinfo, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Run migrations and seeders
+        run: php artisan migrate --seed --force
+
+      - name: Run Pint
+        run: ./vendor/bin/pint --test
+
+      - name: Run tests
+        run: php artisan test
