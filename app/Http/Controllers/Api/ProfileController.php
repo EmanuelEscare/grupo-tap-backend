@@ -26,6 +26,10 @@ class ProfileController extends Controller
             ->orderByDesc('created_at')
             ->paginate(15);
 
+        $profiles->getCollection()->each(function (Profile $profile): void {
+            $profile->sections = $this->sectionsForProfile($profile);
+        });
+
         return ApiResponse::success('Profiles retrieved', [
             'items' => ProfileListResource::collection($profiles->getCollection())->resolve($request),
             'pagination' => [

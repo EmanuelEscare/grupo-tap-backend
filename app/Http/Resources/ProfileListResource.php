@@ -16,6 +16,8 @@ class ProfileListResource extends JsonResource
             'id' => (string) $this->getKey(),
             'code' => $this->code,
             'name' => $this->name,
+            'section_ids' => $this->section_ids ?? [],
+            'sections' => $this->sections ?? [],
             'created_at' => $this->created_at?->format('d/m/Y H:i'),
         ];
     }
